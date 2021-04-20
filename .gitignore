@@ -1,0 +1,7 @@
+# Compiled Object files
+bin/*
+!.gitkeep
+
+# Executable files
+build/*
+!.gitkeep
