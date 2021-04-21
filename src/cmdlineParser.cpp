@@ -6,17 +6,17 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
+
 #include "cmdlineParser.h"
 
 namespace WNGJIA001 {
     // variables declaration
-    std::string pgm_filename; 
+    std::string in_PGM_file; 
     int min_size = -1;
     int max_size = -1;
     int threshold = -1; 
     bool p_flag = false; 
-    std::string out_filename;
+    std::string out_PGM_file;
 
     // display help messages
     void getHelp() {
@@ -42,12 +42,10 @@ namespace WNGJIA001 {
                 std::cerr << "ERROR: Undefined command line option" << std::endl;
             }
         } else { // parse command line arguments
-            // check validity of the filename
-            pgm_filename = argv[1];
-            checkFilename(pgm_filename);
             // parse command line flags
-            int i = 2;
-            while (i < argc) {
+            int last_item = argc - 1;
+            int i = 1;
+            while (i < last_item) {
                 std::string flag = argv[i];
                 if (flag == "-s") {
                     if ((min_size != -1) && (max_size != -1)) { // multiple -s flags: error
@@ -59,6 +57,7 @@ namespace WNGJIA001 {
                     } else { // parse -s flags
                         min_size = std::stoi(argv[++i]);
                         max_size = std::stoi(argv[++i]);
+                        std::cout << "s flags parsed: " << min_size << "; " << max_size << std::endl;
                     }
                 } else if (flag == "-t") {
                     if (threshold != -1) { // multiple -t flags: error
@@ -69,6 +68,7 @@ namespace WNGJIA001 {
                         exit(1);
                     } else { // parse threshold
                         threshold = std::stoi(argv[++i]);
+                        std::cout << "t flags parsed: " << threshold << std::endl;
                     }
                 } else if (flag == "-p") {
                     if (p_flag) { // multiple -p flags: error 
@@ -76,13 +76,16 @@ namespace WNGJIA001 {
                         exit(1);
                     } else {
                         p_flag = true;
+                        std::cout << "p flags parsed" << std::endl;
                     }
                 } else if (flag == "-w") {
                     if ((argc - i) < 2) { // require at least 1 param follow -w
                         std::cerr << "ERROR: Incorrect format of -w flags" << std::endl;
                         exit(1);
                     } else {
-                        out_filename = argv[++i];
+                        out_PGM_file = argv[++i];
+                        checkFilename(out_PGM_file);
+                        std::cout << "w flags parsed: " << out_PGM_file << std::endl;
                     }
                 } else {
                     std::cerr << "ERROR: Undefined command line flags" << std::endl;
@@ -94,23 +97,27 @@ namespace WNGJIA001 {
                 std::cerr << "ERROR: Missing compulsory -w flag" << std::endl;
                 exit(1);
             }
+            // parse input PGM filename
+            in_PGM_file = argv[last_item];
+            checkFilename(in_PGM_file);
         }
     }
 
     // check if the pgm file name is valid
     void checkFilename(const std::string s) {
-        int filename_size = pgm_filename.size();
+        std::string filename = s;
+        int filename_size = filename.size();
         if (filename_size < 5) { // minimum requirement is 5 chars, e.g: a.pgm
-            std::cerr << "ERROR: Invalid PGM filename" << std::endl;
+            std::cerr << "ERROR: Invalid PGM filename: " << s << std::endl;
             exit(1);
-        } else if (pgm_filename.find('.') != std::string::npos) { // find the position where extension starts
-            std::string extension = pgm_filename.substr(pgm_filename.find('.')+1);
+        } else if (filename.find('.') != std::string::npos) { // find the position where extension starts
+            std::string extension = filename.substr(filename.find('.')+1);
             if (extension != "pgm") { // incorrect extension
-                std::cerr << "ERROR: Not a PGM image" << std::endl;
+                std::cerr << "ERROR: Invalid PGM filename: " << s << std::endl;
                 exit(1);
             }
         } else { // size > 4 but no extension
-            std::cerr << "ERROR: Invalid PGM filename" << std::endl;
+            std::cerr << "ERROR: Invalid PGM filename: " << s << std::endl;
             exit(1);
         }
     }
@@ -127,6 +134,6 @@ namespace WNGJIA001 {
 
     // return true if a necessary flag missing
     bool missingFlag() {
-        return out_filename.empty();
+        return out_PGM_file.empty();
     }
 }

@@ -9,16 +9,15 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 
 namespace WNGJIA001 {
     // external variables
-    extern std::string pgm_filename; // PGM image file name
+    extern std::string in_PGM_file; // input PGM image file name
     extern int min_size; // minimum valid components size [min default = 3, max = image width*img height i.e. unlimited]
     extern int max_size;// maximum valid components size
     extern int threshold; // threshold for component detection (default=128, limit to [0. . . 255])
     extern bool p; // option flag to print data
-    extern std::string out_filename; // output PGM image file name
+    extern std::string out_PGM_file; // output PGM image file name
 
     // methods
     // display help messages
