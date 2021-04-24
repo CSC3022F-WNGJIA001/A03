@@ -4,8 +4,8 @@
 * Author: WNGJIA001
 */
 
-#ifndef _CMDLINEPARSER
-#define _CMDLINEPARSER
+#ifndef __CMDLINEPARSER__
+#define __CMDLINEPARSER__
 
 #include <iostream>
 #include <string>
@@ -16,7 +16,7 @@ namespace WNGJIA001 {
     extern int min_size; // minimum valid components size [min default = 3, max = image width*img height i.e. unlimited]
     extern int max_size;// maximum valid components size
     extern int threshold; // threshold for component detection (default=128, limit to [0. . . 255])
-    extern bool p; // option flag to print data
+    extern bool p_flag; // option flag to print data
     extern std::string out_PGM_file; // output PGM image file name
 
     // methods

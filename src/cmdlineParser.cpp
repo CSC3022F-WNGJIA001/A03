@@ -57,7 +57,6 @@ namespace WNGJIA001 {
                     } else { // parse -s flags
                         min_size = std::stoi(argv[++i]);
                         max_size = std::stoi(argv[++i]);
-                        std::cout << "s flags parsed: " << min_size << "; " << max_size << std::endl;
                     }
                 } else if (flag == "-t") {
                     if (threshold != -1) { // multiple -t flags: error
@@ -67,16 +66,20 @@ namespace WNGJIA001 {
                         std::cerr << "ERROR: Incorrect format of -t flags" << std::endl;
                         exit(1);
                     } else { // parse threshold
-                        threshold = std::stoi(argv[++i]);
-                        std::cout << "t flags parsed: " << threshold << std::endl;
+                        int t = std::stoi(argv[++i]);
+                        if (validThreshold(t)) { // threshold should fall between [0. . . 255]
+                            threshold = t;
+                        } else {
+                            std::cerr << "ERROR: Invalid threshold declared; limit to [0. . . 255]" << std::endl;
+                            exit(1);
+                        }
                     }
                 } else if (flag == "-p") {
                     if (p_flag) { // multiple -p flags: error 
-                        std::cerr << "ERROR: Multiple declaration of -t flags" << std::endl;
+                        std::cerr << "ERROR: Multiple declaration of -p flags" << std::endl;
                         exit(1);
                     } else {
                         p_flag = true;
-                        std::cout << "p flags parsed" << std::endl;
                     }
                 } else if (flag == "-w") {
                     if ((argc - i) < 2) { // require at least 1 param follow -w
@@ -85,7 +88,6 @@ namespace WNGJIA001 {
                     } else {
                         out_PGM_file = argv[++i];
                         checkFilename(out_PGM_file);
-                        std::cout << "w flags parsed: " << out_PGM_file << std::endl;
                     }
                 } else {
                     std::cerr << "ERROR: Undefined command line flags" << std::endl;
