@@ -24,6 +24,8 @@ namespace WNGJIA001
     // Destructor
     PGMimageProcessor::~PGMimageProcessor()
     {
+        delete [] this->in_img;
+        delete [] this->out_img;
         if (!this->cc_set.empty()) { 
             this->cc_set.clear(); 
         }
@@ -219,7 +221,7 @@ namespace WNGJIA001
         out_file.close();
         // clean up memory of out_img
         delete [] out_img;
-
+        out_img = nullptr;
         return true;
     }
 
@@ -296,6 +298,7 @@ namespace WNGJIA001
     {
         if (this->in_img != nullptr) { 
             delete [] this->in_img;
+            this->in_img = nullptr;
             std::cout << "Memory holding the input PGM image has been deallocated" << std::endl;
         }
     }
