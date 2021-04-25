@@ -47,7 +47,7 @@ Finally, to write the output PGM image, a function will be called to iterate thr
 and add pixels to a char pointer pointing to an array of chars with which the output PGM image was written.
 
 ### Mastery Work
-std::set<ConnectedComponents> was implemented as the container of components in PGMimageProcessor class.
+std::set\<ConnectedComponents> was implemented as the container of components in PGMimageProcessor class.
 
 Colour coded output was not implemented.
 
@@ -79,7 +79,7 @@ The following command line structure should be used to execute the program:
 ```sh
 ./build/findcomp [options] <inputPGMfile>
 ```
-<inputPGMfile> is the file name of input PGM file (including .pgm)
+\<inputPGMfile> is the file name of input PGM file (including .pgm)
 
 ### Available Options
 ```sh
