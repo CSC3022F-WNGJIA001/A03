@@ -10,13 +10,14 @@
 namespace WNGJIA001
 {   
     // Default constructor
-    PGMimageProcessor::PGMimageProcessor() : cc_set(&PGMimageProcessor::compareComponents)
+    PGMimageProcessor::PGMimageProcessor() : img_width(0), img_height(0), in_img(nullptr), 
+        out_img(nullptr), cc_set(&PGMimageProcessor::compareComponents)
     {}
 
     // Custom constructor
-    PGMimageProcessor::PGMimageProcessor(std::string filename) : cc_set(&PGMimageProcessor::compareComponents)
+    PGMimageProcessor::PGMimageProcessor(std::string filename) : img_width(0), img_height(0), in_img(nullptr), 
+        out_img(nullptr), cc_set(&PGMimageProcessor::compareComponents)
     {
-        in_img = nullptr;
         readPGMfile(filename);
     }
 
@@ -29,19 +30,50 @@ namespace WNGJIA001
     }
 
     // Copy constructor
-    PGMimageProcessor::PGMimageProcessor(const PGMimageProcessor& ip) : cc_set(ip.cc_set)
-    {}
+    PGMimageProcessor::PGMimageProcessor(const PGMimageProcessor& ip) : img_width(ip.img_width), img_height(ip.img_height), in_img(nullptr), 
+        out_img(nullptr), cc_set(ip.cc_set)
+    {
+        if(ip.in_img != nullptr)
+        {
+            in_img = new char(*ip.in_img);
+        }
+        if(ip.out_img != nullptr)
+        {
+            out_img = new char(*ip.out_img);
+        }
+    }
 
     // Move constructor
-    PGMimageProcessor::PGMimageProcessor(PGMimageProcessor && ip) : cc_set(std::move(ip.cc_set))
+    PGMimageProcessor::PGMimageProcessor(PGMimageProcessor && ip) : img_width(ip.img_width), img_height(ip.img_height), in_img(ip.in_img), 
+        out_img(ip.out_img), cc_set(std::move(ip.cc_set))
     {
+        ip.in_img = nullptr;
+        ip.out_img = nullptr;
         ip.cc_set.clear();
     }
 
     // Copy assignment operator
     PGMimageProcessor& PGMimageProcessor::operator=(const PGMimageProcessor& rhs)
     {
-        if(this != &rhs) { this->cc_set = rhs.cc_set; } // protect against self-assignment
+        if(this != &rhs) { // protect against self-assignment
+            this->img_width = rhs.img_width;
+            this->img_height = rhs.img_height;
+            if(this->in_img != nullptr) {
+                delete [] this->in_img;
+                this->in_img = nullptr;
+            }
+            if(rhs.in_img != nullptr) {
+                this->in_img = new char(*rhs.in_img);
+            }
+            if(this->out_img != nullptr) {
+                delete [] this->out_img;
+                this->out_img = nullptr;
+            }
+            if(rhs.out_img != nullptr) {
+                this->out_img = new char(*rhs.out_img);
+            }
+            this->cc_set = rhs.cc_set; 
+        } 
         return *this;
     }
 
@@ -49,6 +81,26 @@ namespace WNGJIA001
     PGMimageProcessor& PGMimageProcessor::operator=(PGMimageProcessor&& rhs)
     {
         if(this != &rhs) { // protect against self-assignment
+            this->img_width = rhs.img_width;
+            this->img_height = rhs.img_height;
+            if(this->in_img != nullptr)
+            {
+                delete [] this->in_img; 
+                this->in_img = nullptr;
+            }
+            if(rhs.in_img != nullptr)
+            {
+                this->in_img = rhs.in_img;
+                rhs.in_img = nullptr;
+            }
+            if(this->out_img != nullptr) {
+                delete [] this->out_img;
+                this->out_img = nullptr;
+            }
+            if(rhs.out_img != nullptr) {
+                this->out_img = rhs.out_img;
+                rhs.out_img = nullptr;
+            }
             this->cc_set = std::move(rhs.cc_set);
             rhs.cc_set.clear();
         }
@@ -117,6 +169,8 @@ namespace WNGJIA001
                 continue; 
             }
         }
+        // clear up memory used to hold the PGM input image
+        clearMemory();
         return getComponentCount();
     }
 
@@ -239,7 +293,7 @@ namespace WNGJIA001
     void PGMimageProcessor::clearMemory(void)
     {
         if (this->in_img != nullptr) { 
-            delete [] this->in_img; 
+            delete [] this->in_img;
             std::cout << "Memory holding the input PGM image has been deallocated" << std::endl;
         }
     }

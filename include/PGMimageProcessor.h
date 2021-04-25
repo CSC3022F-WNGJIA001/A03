@@ -91,7 +91,7 @@ namespace WNGJIA001
         int img_width; // width of input PGM image
         int img_height; // height of input PGM image
         char *in_img; // pointer to char array which stores binary data of input PGM file
-        char *out_img;
+        char *out_img; // pointer to char array which stores characters for output PGM file
         std::set<ConnectedComponent, decltype(&PGMimageProcessor::compareComponents)> cc_set;
     };
 }

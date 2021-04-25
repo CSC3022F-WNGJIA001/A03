@@ -35,8 +35,6 @@ int main(int argc, char *argv[]) {
     std::cout << std::endl;
     int cc_num = myProcessor.extractComponents((unsigned char)threshold, min_size);
     std::cout << "Connected component extraction completed: " << cc_num << " components extracted" << std::endl;
-    // clear up memory used to hold the PGM input image
-    myProcessor.clearMemory();
 
     // filter
     if ((min_size != -1) && (max_size != -1)) { // custom min and max sizes: do filter
