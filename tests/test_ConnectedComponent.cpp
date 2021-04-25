@@ -21,6 +21,8 @@ TEST_CASE("ConnectedComponent \"Big 6\" Unit Tests") {
 	SECTION( "Copy Constructor" ) {
 		ConnectedComponent cc_cc1 = ConnectedComponent(1);
         cc_cc1.addPixel(2);
+        REQUIRE(cc_cc1.getID() == 1);
+        REQUIRE(cc_cc1.getSize() == 1);
         ConnectedComponent cc_cc2 = cc_cc1;
 
         REQUIRE(cc_cc2.getID() == cc_cc1.getID());
