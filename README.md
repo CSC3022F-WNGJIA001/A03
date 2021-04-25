@@ -1,7 +1,6 @@
 # Assignment 3 CSC3022F, 2021
-# Author: WNGJIA001
+## Author: WNGJIA001
 
-====================================================================================================
 
 ## Source Files
 ### cmdlineParser.cpp
@@ -29,7 +28,6 @@ Contains main function that calls functions to parse command line options and cr
 PGMimageProcessor object which is then used to perform the extraction of components and generate 
 output PGM image.
 
-====================================================================================================
 
 ## Code Structure
 The driver controls the work flow of the program by first calling functions from cmdlineParser to 
@@ -55,7 +53,6 @@ Colour coded output was not implemented.
 
 Boundary count and image was not implemented.
 
-====================================================================================================
 
 ## Makefile
 
@@ -76,7 +73,6 @@ $ make test
 ```
 Compiles and links files for unit testing as well run the unit tests
 
-====================================================================================================
 
 ## Execute the Code
 The following command line structure should be used to execute the program:
