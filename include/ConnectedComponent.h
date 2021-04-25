@@ -20,7 +20,7 @@ namespace WNGJIA001
         // local variables
         int pix_num; // number of pixels in the component
         int comp_id; // unique integer identifier for a component
-        std::vector<int> comp_pix;
+        std::vector<int> comp_pix; // position of pixels from the input image
         
         public:
         // the Big 6 for ConnectedComponent class
@@ -34,7 +34,9 @@ namespace WNGJIA001
         // other methods
         void addPixel(int p); // add a new pixel to component
         int getID(void) const; // return component id
+        int& getIDr(void); // return reference of component id
         int getSize(void) const; // return number of pixels in component
+        int emptyComponent(void) const; // return 0 if comp_pix empty else return the size of comp_pix
     };
 }
 #endif

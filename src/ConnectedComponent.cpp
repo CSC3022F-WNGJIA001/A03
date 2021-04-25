@@ -56,7 +56,9 @@ namespace WNGJIA001
     {
         if(this != &rhs) { // protect against self-assignment
             this->pix_num = rhs.pix_num;
+            rhs.pix_num = 0;
             this->comp_id = rhs.comp_id;
+            rhs.comp_id = 0;
             this->comp_pix = std::move(rhs.comp_pix);
             rhs.comp_pix.clear();
         }
@@ -72,14 +74,14 @@ namespace WNGJIA001
     }
 
     // return component id
-    int ConnectedComponent::getID(void) const
-    {
-        return this->comp_id;
-    }
+    int ConnectedComponent::getID(void) const { return this->comp_id; }
+
+    // return reference of component id
+    int& ConnectedComponent::getIDr(void) { return this->comp_id; }
         
     // return number of pixels in component
-    int ConnectedComponent::getSize(void) const
-    {
-        return this->pix_num;
-    }
+    int ConnectedComponent::getSize(void) const { return this->pix_num; }
+
+    // return 0 if comp_pix empty else return the size of comp_pix
+    int ConnectedComponent::emptyComponent(void) const { return this->comp_pix.size(); }
 }
