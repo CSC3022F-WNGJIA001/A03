@@ -84,8 +84,8 @@ TEST_CASE("Component Extraction and Filtering Unit Tests") {
 	int min = 5000;
 	int max = 7000;
 	ip1.extractComponents(threshold, min);
-	REQUIRE(ip1.getComponentCount() == 6);
-	REQUIRE(ip1.getSmallestSize() == 4255);
+	REQUIRE(ip1.getComponentCount() == 5);
+	REQUIRE(ip1.getSmallestSize() == 5675);
 	REQUIRE(ip1.getLargestSize() == 7901);
 
 	ip1.filterComponentsBySize(min, max);

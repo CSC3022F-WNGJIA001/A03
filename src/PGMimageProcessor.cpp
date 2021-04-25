@@ -164,7 +164,9 @@ namespace WNGJIA001
                     in_img[pos] = 0;
                 }
                 // insert new_cc to cc_set
-                cc_set.insert(new_cc);
+                if (new_cc.getSize() > minValidSize) {
+                    cc_set.insert(new_cc);
+                }
             } else { 
                 continue; 
             }
