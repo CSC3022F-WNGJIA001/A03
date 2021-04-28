@@ -13,6 +13,7 @@
 #include <string>
 #include <set>
 #include <queue>
+#include <memory>
 
 namespace WNGJIA001
 {
