@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     // write out
     std::cout << std::endl;
     if (myProcessor.writeComponents(out_PGM_file)) {
-        std::cout << "Output PGM image has been successful generated as bin/" << out_PGM_file << "\n" << std::endl;
+        std::cout << "Output PGM image has been successfully generated as bin/" << out_PGM_file << "\n" << std::endl;
     }
     return 0;
 }
