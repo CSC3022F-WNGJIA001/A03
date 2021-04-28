@@ -59,14 +59,14 @@ Boundary count and image was not implemented.
 ```sh
 $ make clean
 ```
-Removes binary object files and pgm files from bin/ and executable file 'findcomp' as well as 'testsuite' 
-from build/ directory
+Removes binary object files and pgm files from build/ and executable file 'findcomp' as well as 'testsuite' 
+from bin/ directory
 
 ```sh
 $ make
 ```
-Compiles source files and store object files as bin/%.o; 
-Links object files and store the executable file as build/findcomp
+Compiles source files and store object files as build/%.o; 
+Links object files and store the executable file as bin/findcomp
 
 ```sh
 $ make test
@@ -77,7 +77,7 @@ Compiles and links files for unit testing as well run the unit tests
 ## Execute the Code
 The following command line structure should be used to execute the program:
 ```sh
-./build/findcomp [options] <inputPGMfile>
+./bin/findcomp [options] <inputPGMfile>
 ```
 \<inputPGMfile> is the file name of input PGM file (including .pgm)
 
@@ -109,7 +109,7 @@ Only one -p flag should be specified
 
 ### Example
 ```sh
-$ ./build/findcomp -s 3 7000 -t 200 -p -w example.pgm chess.pgm 
+$ ./bin/findcomp -s 3 7000 -t 200 -p -w example.pgm chess.pgm 
 ```
 The above example will generate an output PGM image as example.pgm with foreground components extracted from 
 chess.pgm; 

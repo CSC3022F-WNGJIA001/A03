@@ -10,13 +10,11 @@
 namespace WNGJIA001
 {   
     // Default constructor
-    PGMimageProcessor::PGMimageProcessor() : img_width(0), img_height(0), in_img(nullptr), 
-        out_img(nullptr), cc_set(&PGMimageProcessor::compareComponents)
+    PGMimageProcessor::PGMimageProcessor() : img_width(0), img_height(0), in_img(nullptr), cc_set(&PGMimageProcessor::compareComponents)
     {}
 
     // Custom constructor
-    PGMimageProcessor::PGMimageProcessor(std::string filename) : img_width(0), img_height(0), in_img(nullptr), 
-        out_img(nullptr), cc_set(&PGMimageProcessor::compareComponents)
+    PGMimageProcessor::PGMimageProcessor(std::string filename) : img_width(0), img_height(0), in_img(nullptr), cc_set(&PGMimageProcessor::compareComponents)
     {
         readPGMfile(filename);
     }
@@ -25,32 +23,24 @@ namespace WNGJIA001
     PGMimageProcessor::~PGMimageProcessor()
     {
         delete [] this->in_img;
-        delete [] this->out_img;
         if (!this->cc_set.empty()) { 
             this->cc_set.clear(); 
         }
     }
 
     // Copy constructor
-    PGMimageProcessor::PGMimageProcessor(const PGMimageProcessor& ip) : img_width(ip.img_width), img_height(ip.img_height), in_img(nullptr), 
-        out_img(nullptr), cc_set(ip.cc_set)
+    PGMimageProcessor::PGMimageProcessor(const PGMimageProcessor& ip) : img_width(ip.img_width), img_height(ip.img_height), in_img(nullptr)
     {
         if(ip.in_img != nullptr)
         {
             in_img = new char(*ip.in_img);
         }
-        if(ip.out_img != nullptr)
-        {
-            out_img = new char(*ip.out_img);
-        }
     }
 
     // Move constructor
-    PGMimageProcessor::PGMimageProcessor(PGMimageProcessor && ip) : img_width(ip.img_width), img_height(ip.img_height), in_img(ip.in_img), 
-        out_img(ip.out_img), cc_set(std::move(ip.cc_set))
+    PGMimageProcessor::PGMimageProcessor(PGMimageProcessor && ip) : img_width(ip.img_width), img_height(ip.img_height), in_img(ip.in_img), cc_set(std::move(ip.cc_set))
     {
         ip.in_img = nullptr;
-        ip.out_img = nullptr;
         ip.cc_set.clear();
     }
 
@@ -67,14 +57,7 @@ namespace WNGJIA001
             if(rhs.in_img != nullptr) {
                 this->in_img = new char(*rhs.in_img);
             }
-            if(this->out_img != nullptr) {
-                delete [] this->out_img;
-                this->out_img = nullptr;
-            }
-            if(rhs.out_img != nullptr) {
-                this->out_img = new char(*rhs.out_img);
-            }
-            this->cc_set = rhs.cc_set; 
+            // this->cc_set = rhs.cc_set; 
         } 
         return *this;
     }
@@ -95,14 +78,6 @@ namespace WNGJIA001
                 this->in_img = rhs.in_img;
                 rhs.in_img = nullptr;
             }
-            if(this->out_img != nullptr) {
-                delete [] this->out_img;
-                this->out_img = nullptr;
-            }
-            if(rhs.out_img != nullptr) {
-                this->out_img = rhs.out_img;
-                rhs.out_img = nullptr;
-            }
             this->cc_set = std::move(rhs.cc_set);
             rhs.cc_set.clear();
         }
@@ -119,17 +94,19 @@ namespace WNGJIA001
     {
         std::cout << "Extracting connected components ..." << std::endl;
         std::queue<int> pix_q; // use queue to store neighbouring pixels
+        int cc_id;
+        unsigned char value;
+        unsigned char current_value;
         for (int i = 0; i < img_width*img_height; ++i) { // iterate through input PGM pixels
-            unsigned char value = (unsigned)in_img[i];
+            value = (unsigned)in_img[i];
             if (value >= threshold) {   // if a pixel >= threshold -> add to queue
                 pix_q.push(i);
-                int cc_id = getComponentCount();
-                cc_id += 1;
-                ConnectedComponent new_cc(cc_id);
+                cc_id = getComponentCount()+1;
+                std::unique_ptr<ConnectedComponent> cc_ptr (new ConnectedComponent(cc_id));
                 while (!pix_q.empty()) { // while pix_q not empty
                     // add new neighbours of each pixel that's being processed;
                     int pos = pix_q.front();
-                    unsigned char current_value = (unsigned)in_img[pos];
+                    current_value = (unsigned)in_img[pos];
                     if (!(current_value >= threshold)) { 
                         pix_q.pop();
                         continue; 
@@ -161,13 +138,13 @@ namespace WNGJIA001
                         if ((unsigned)in_img[W] >= threshold) { pix_q.push(W); }
                     }
                     // and add new pixel to new_cc
-                    new_cc.addPixel(pos);
+                    cc_ptr->addPixel(pos);
                     pix_q.pop();
                     in_img[pos] = 0;
                 }
                 // insert new_cc to cc_set
-                if (new_cc.getSize() > minValidSize) {
-                    cc_set.insert(new_cc);
+                if (cc_ptr->getSize() > minValidSize) {
+                    cc_set.insert(std::move(cc_ptr));
                 }
             } else { 
                 continue; 
@@ -186,9 +163,9 @@ namespace WNGJIA001
     int PGMimageProcessor::filterComponentsBySize(int minSize, int maxSize)
     {
         std::cout << "Filtering out components with size less than " << minSize << " and greater than " << maxSize << " ..." << std::endl;
-        std::set<ConnectedComponent, decltype(&PGMimageProcessor::compareComponents)>::const_iterator it = cc_set.begin();
+        std::multiset<std::unique_ptr<ConnectedComponent>, decltype(&PGMimageProcessor::compareComponents)>::const_iterator it = cc_set.begin();
         while (it != cc_set.end()){
-            int size = it->getSize();
+            int size = (*it)->getSize();
             if ((size < minSize) || (size > maxSize)) { 
                 it = cc_set.erase(it); 
             } else { ++it; }
@@ -203,16 +180,15 @@ namespace WNGJIA001
     bool PGMimageProcessor::writeComponents(const std::string & outFileName)
     {
         // generate out_img pointer to char array of the output image
-        out_img = new char[img_width*img_height] {}; // pointer to array of zeros
-        for (std::set<ConnectedComponent, decltype(&PGMimageProcessor::compareComponents)>::const_iterator 
+        char *out_img = new char[img_width*img_height] {}; // pointer to array of zeros
+        for (std::multiset<std::unique_ptr<ConnectedComponent>, decltype(&PGMimageProcessor::compareComponents)>::const_iterator 
              set_it = cc_set.begin(); set_it != cc_set.end(); ++set_it) { // loop through each component's comp_pix
-            std::vector<int> pix_vec = set_it->comp_pix;
+            std::vector<int> pix_vec = (*set_it)->comp_pix;
             for (std::vector<int>::const_iterator vec_it = pix_vec.begin(); vec_it != pix_vec.end(); ++vec_it) {
                 int pos = *vec_it;
                 out_img[pos] = (unsigned char)255;
             }
         }
-        
         // write to output file
         std::string output_filename = "bin/" + outFileName;
         std::ofstream out_file(output_filename, std::ios_base::binary);
@@ -221,7 +197,6 @@ namespace WNGJIA001
         out_file.close();
         // clean up memory of out_img
         delete [] out_img;
-        out_img = nullptr;
         return true;
     }
 
@@ -234,15 +209,13 @@ namespace WNGJIA001
     // return number of pixels in largest component
     int PGMimageProcessor::getLargestSize(void) const
     {
-        ConnectedComponent cc_large = *cc_set.rbegin();
-        return cc_large.getSize();
+        return (*cc_set.rbegin())->getSize();
     }
         
     // return number of pixels in smallest component
     int PGMimageProcessor::getSmallestSize(void) const
     {
-        ConnectedComponent cc_small = *cc_set.begin();
-        return cc_small.getSize();
+        return (*cc_set.begin())->getSize();
     }
         
     /*  print the data for a component to std::cout
@@ -255,10 +228,10 @@ namespace WNGJIA001
     }
 
     // order components from smallest to largest by size
-    bool PGMimageProcessor::compareComponents(const ConnectedComponent & lhs, const ConnectedComponent & rhs)
+    bool PGMimageProcessor::compareComponents(const std::unique_ptr<ConnectedComponent> & lhs, const std::unique_ptr<ConnectedComponent> & rhs)
     {
         // return true if lhs < rhs (based on size)
-        return (lhs.getSize() < rhs.getSize()); 
+        return (lhs->getSize() < rhs->getSize()); 
     }
 
     // read input file
@@ -310,8 +283,8 @@ namespace WNGJIA001
     {
         std::cout << "+----------------------------------------------------------------+" << std::endl;
         std::cout << " Printing out component data:" << std::endl;
-        for (std::set<ConnectedComponent, decltype(&PGMimageProcessor::compareComponents)>::const_iterator it = cc_set.begin(); it != cc_set.end(); ++it) {
-            printComponentData(*it);
+        for (std::multiset<std::unique_ptr<ConnectedComponent>, decltype(&PGMimageProcessor::compareComponents)>::iterator it = cc_set.begin(); it != cc_set.end(); ++it) {
+            printComponentData(*(*it));
         }
         std::cout << "+----------------------------------------------------------------+" << std::endl;
         std::cout << " Total component number: " << getComponentCount() << std::endl;

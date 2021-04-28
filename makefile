@@ -11,20 +11,20 @@ CFLAGS = -c -Wall -Iinclude
 rm = rm -f
 
 # target and objects declaration
-TARGET = $(BUILD_DIR)findcomp
-OBJECTS = $(BIN_DIR)cmdlineParser.o $(BIN_DIR)ConnectedComponent.o $(BIN_DIR)PGMimageProcessor.o $(BIN_DIR)driver.o
+TARGET = $(BIN_DIR)findcomp
+OBJECTS = $(BUILD_DIR)cmdlineParser.o $(BUILD_DIR)ConnectedComponent.o $(BUILD_DIR)PGMimageProcessor.o $(BUILD_DIR)driver.o
 
 # link object files to create executable file extractor
 $(TARGET): $(OBJECTS)
 	$(CC) $^ -o $@ -std=c++2a
 # compile source files to create object files
-$(BIN_DIR)%.o: $(SRC_DIR)%.cpp
+$(BUILD_DIR)%.o: $(SRC_DIR)%.cpp
 	$(CC) $(CFLAGS) $< -o $@ -std=c++2a
 
 .PHONY: test clean
 
-TEST_TARGET = $(BUILD_DIR)testsuite
-TEST_OBJECTS = $(BIN_DIR)test_ConnectedComponent.o $(BIN_DIR)ConnectedComponent.o $(BIN_DIR)test_PGMimageProcessor.o $(BIN_DIR)PGMimageProcessor.o $(BIN_DIR)test_main.o
+TEST_TARGET = $(BIN_DIR)testsuite
+TEST_OBJECTS = $(BUILD_DIR)test_ConnectedComponent.o $(BUILD_DIR)ConnectedComponent.o $(BUILD_DIR)test_PGMimageProcessor.o $(BUILD_DIR)PGMimageProcessor.o $(BUILD_DIR)test_main.o
 
 test: $(TEST_TARGET)
 	@$(TEST_TARGET)
@@ -32,22 +32,22 @@ test: $(TEST_TARGET)
 $(TEST_TARGET): $(TEST_OBJECTS)
 	$(CC) $^ -o $@ -std=c++2a
 
-$(BIN_DIR)test_main.o: $(TEST_DIR)test_main.cpp
+$(BUILD_DIR)test_main.o: $(TEST_DIR)test_main.cpp
 	$(CC) $(CFLAGS) $< -o $@ -std=c++2a
 
-$(BIN_DIR)test_ConnectedComponent.o: $(TEST_DIR)test_ConnectedComponent.cpp
+$(BUILD_DIR)test_ConnectedComponent.o: $(TEST_DIR)test_ConnectedComponent.cpp
 	$(CC) $(CFLAGS) $< -o $@ -std=c++2a
 
-$(BIN_DIR)ConnectedComponent.o: $(SRC_DIR)ConnectedComponent.cpp
+$(BUILD_DIR)ConnectedComponent.o: $(SRC_DIR)ConnectedComponent.cpp
 	$(CC) $(CFLAGS) $< -o $@ -std=c++2a
 
-$(BIN_DIR)test_PGMimageProcessor.o: $(TEST_DIR)test_PGMimageProcessor.cpp
+$(BUILD_DIR)test_PGMimageProcessor.o: $(TEST_DIR)test_PGMimageProcessor.cpp
 	$(CC) $(CFLAGS) $< -o $@ -std=c++2a
 
-$(BIN_DIR)PGMimageProcessor.o: $(SRC_DIR)PGMimageProcessor.cpp
+$(BUILD_DIR)PGMimageProcessor.o: $(SRC_DIR)PGMimageProcessor.cpp
 	$(CC) $(CFLAGS) $< -o $@ -std=c++2a
 
 # remove all the object binary files and executable file
 clean:
-	$(rm) $(BIN_DIR)*.o $(BIN_DIR)*.pgm
-	$(rm) $(BUILD_DIR)findcomp $(BUILD_DIR)testsuite
+	$(rm) $(BUILD_DIR)*.o
+	$(rm) $(BIN_DIR)*.pgm $(TARGET) $(TEST_TARGET)
