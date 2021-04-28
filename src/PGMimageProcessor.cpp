@@ -29,8 +29,12 @@ namespace WNGJIA001
     }
 
     // Copy constructor
-    PGMimageProcessor::PGMimageProcessor(const PGMimageProcessor& ip) : img_width(ip.img_width), img_height(ip.img_height), in_img(nullptr)
+    PGMimageProcessor::PGMimageProcessor(const PGMimageProcessor& ip) : img_width(ip.img_width), img_height(ip.img_height), in_img(nullptr), cc_set(&PGMimageProcessor::compareComponents)
     {
+        for (std::multiset<std::unique_ptr<ConnectedComponent>, decltype(&PGMimageProcessor::compareComponents)>::const_iterator it = ip.cc_set.begin(); it != ip.cc_set.end(); ++it) {
+            std::unique_ptr<ConnectedComponent> cc_ptr (new ConnectedComponent(*(*it)));
+            cc_set.insert(std::move(cc_ptr));
+        }
         if(ip.in_img != nullptr)
         {
             in_img = new char(*ip.in_img);
@@ -50,6 +54,11 @@ namespace WNGJIA001
         if(this != &rhs) { // protect against self-assignment
             this->img_width = rhs.img_width;
             this->img_height = rhs.img_height;
+            this->cc_set.clear();
+            for (std::multiset<std::unique_ptr<ConnectedComponent>, decltype(&PGMimageProcessor::compareComponents)>::iterator it = rhs.cc_set.begin(); it != rhs.cc_set.end(); ++it) {
+                std::unique_ptr<ConnectedComponent> cc_ptr (new ConnectedComponent(*(*it)));
+                this->cc_set.insert(std::move(cc_ptr));
+            }
             if(this->in_img != nullptr) {
                 delete [] this->in_img;
                 this->in_img = nullptr;
@@ -57,7 +66,6 @@ namespace WNGJIA001
             if(rhs.in_img != nullptr) {
                 this->in_img = new char(*rhs.in_img);
             }
-            // this->cc_set = rhs.cc_set; 
         } 
         return *this;
     }

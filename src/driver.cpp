@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     std::cout << "Connected component extraction completed: " << cc_num << " components extracted" << std::endl;
 
     // filter
-    if ((min_size != -1) && (max_size != -1)) { // custom min and max sizes: do filter
+    if ((min_size != 3) && (max_size != myProcessor.getWidth()*myProcessor.getHeight())) { // custom min and max sizes: do filter
         std::cout << std::endl;
         int i = myProcessor.filterComponentsBySize(min_size, max_size);
         std::cout << "Filtering completed: " << i << " components remaining" << std::endl;
