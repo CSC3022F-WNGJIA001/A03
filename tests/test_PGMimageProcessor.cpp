@@ -26,7 +26,7 @@ TEST_CASE("PGMimageProcessor Big 6 Unit Tests") {
 		REQUIRE(ip_cc1.getHeight() == 252);
 		REQUIRE(ip_cc1.getComponentCount() == 6);
 
-        PGMimageProcessor ip_cc2 = ip_cc1;
+        PGMimageProcessor ip_cc2(ip_cc1);
 		REQUIRE(ip_cc2.getWidth() == ip_cc1.getWidth());
 		REQUIRE(ip_cc2.getHeight() == ip_cc1.getHeight());
 		REQUIRE(ip_cc2.getComponentCount() == ip_cc1.getComponentCount());
